@@ -4,10 +4,11 @@ using System.Diagnostics;
 public class Driver
 {
     private static TimeSpan totalRuntimeLength = TimeSpan.FromMinutes(1);
+    private const int SEED = 0;
 
     public void RunSerial() 
     {
-        Random rand = new Random();
+        Random rand = new Random(SEED);
         uint taskCounter = 0;
 
         Stopwatch watch = new Stopwatch();
@@ -24,7 +25,7 @@ public class Driver
 
         watch.Stop();
         
-        Console.WriteLine($"Tasks completed: {taskCounter}");
+        Console.WriteLine($"Serial - Tasks completed: {taskCounter}");
     }
 
     public void RunConcurrentBag()
@@ -39,7 +40,7 @@ public class Driver
         for (int i = 0; i < Environment.ProcessorCount; ++i) {
             tasks.Add(Task.Run(() =>
             {
-                Random rand = new Random();
+                Random rand = new Random(SEED);
 
                 while (watch.Elapsed < totalRuntimeLength) {
                     cb.Add(() => 
@@ -63,7 +64,7 @@ public class Driver
 
         watch.Stop();
         
-        Console.WriteLine($"Tasks completed: {taskCounter}");
+        Console.WriteLine($"Concurrent - Tasks completed: {taskCounter}");
     }
 
     public void RunConcurrentBagWithWorkBuffer()
@@ -78,8 +79,8 @@ public class Driver
         for (int i = 0; i < Environment.ProcessorCount; ++i) {
             tasks.Add(Task.Run(() =>
             {
-                Random rand = new Random();
-                int workBufferSize = 10;
+                Random rand = new Random(SEED);
+                int workBufferSize = 5;
 
                 while (watch.Elapsed < totalRuntimeLength) {
                     for (int i = 0; i < workBufferSize; ++i)
@@ -106,6 +107,6 @@ public class Driver
 
         watch.Stop();
         
-        Console.WriteLine($"Tasks completed: {taskCounter}");
+        Console.WriteLine($"Concurrent with buffer - Tasks completed: {taskCounter}");
     }
 }
